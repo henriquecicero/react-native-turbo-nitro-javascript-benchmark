@@ -1,0 +1,12 @@
+logger.warn("[NitroModules] 🔥 NitroLogbook is boosted by nitro!")
+
+android {
+  sourceSets {
+    main {
+      java.srcDirs += [
+        // Nitrogen files
+        "${project.projectDir}/../../modules/nitro/android/kotlin"
+      ]
+    }
+  }
+}

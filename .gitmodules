@@ -1,0 +1,3 @@
+[submodule "modules/turbo/external/boost-headers-only"]
+	path = modules/turbo/external/boost-headers-only
+	url = git@github.com:scipy/boost-headers-only.git

@@ -1,0 +1,85 @@
+# Gradle
+/RNTester/android/app/build/
+/RNTester/android/app/gradle/
+/RNTester/android/app/gradlew
+/RNTester/android/app/gradlew.bat
+/ReactAndroid/build/
+
+/ReactAndroid/src/main/jni/prebuilt/lib/
+/ReactAndroid/src/main/gen
+
+# Android Studio
+.project
+.settings
+.classpath
+*.aab
+
+# Watchman
+.watchmanconfig
+
+# Android
+**/.idea
+.gradle
+*.iml
+.cxx/
+*.keystore
+!debug.keystore
+*.jks
+.cxx
+android/build
+android/app/build
+
+# Xcode
+#
+build/
+
+# Node
+node_modules
+*.log
+.nvm
+.eslintcache
+/bots/node_modules/
+package-lock.json
+
+# yarn
+yarn-error.log
+yarn-debug.log
+
+# OS X
+.DS_Store
+
+# Test generated files
+/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+*.js.meta
+
+/coverage
+/third-party
+
+
+# react-native-codegen
+/ReactCommon/fabric/components/rncore/
+/schema-rncore.json
+
+# Visual studio
+.vscode
+.vs
+
+# Java
+*.hprof
+
+# Dia autosaves and temp files
+*.dia~
+
+# Jest
+.jest/
+junit.xml
+
+# FastLane
+report.xml
+.env.default
+gplay-sa.json
+
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+the-orca-firebase-adminsdk-5adk6-c84d74de22.json
