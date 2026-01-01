@@ -1,18 +1,20 @@
-import RNFetchBlob from 'react-native-blob-util';
+import {Buffer} from 'buffer';
 import fzstd from 'fzstd';
-import { toByteArray } from 'react-native-quick-base64';
-import { Buffer } from "buffer";
+import RNFetchBlob from 'react-native-blob-util';
+import {toByteArray} from 'react-native-quick-base64';
 
 export const readFile = async (fileName: string): Promise<Uint8Array> => {
-    const base64String = await RNFetchBlob.fs.readFile(fileName, 'base64');
-    return toByteArray(base64String);
+  const base64String = await RNFetchBlob.fs.readFile(fileName, 'base64');
+  return toByteArray(base64String);
 };
 
-export const readFileAndDecompress = async (fileName: string): Promise<Uint8Array> => {
-    const base64Blob = await RNFetchBlob.fs.readFile(fileName, 'base64');
-    const blob = toByteArray(base64Blob);
-    const data = fzstd.decompress(blob);
-    return data;
+export const readFileAndDecompress = async (
+  fileName: string,
+): Promise<Uint8Array> => {
+  const base64Blob = await RNFetchBlob.fs.readFile(fileName, 'base64');
+  const blob = toByteArray(base64Blob);
+  const data = fzstd.decompress(blob);
+  return data;
 };
 
 export const getSamplesSize = async (filename: string): Promise<number> => {
@@ -22,29 +24,41 @@ export const getSamplesSize = async (filename: string): Promise<number> => {
 
 export const getSamplesCount = async (filename: string): Promise<number> => {
   const data = await readFileAndDecompress(filename);
-  const obj = JSON.parse(Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString("utf-8"));
+  const obj = JSON.parse(
+    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
+      'utf-8',
+    ),
+  );
   if (!Array.isArray(obj)) {
-    throw new Error("JSON file does not contain an array");
+    throw new Error('JSON file does not contain an array');
   }
   return obj.length;
 };
 
 export const getSamples = async (filename: string): Promise<string[]> => {
   const data = await readFileAndDecompress(filename);
-  const obj = JSON.parse(Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString("utf-8"));
+  const obj = JSON.parse(
+    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
+      'utf-8',
+    ),
+  );
   if (!Array.isArray(obj)) {
-    throw new Error("JSON file does not contain an array");
+    throw new Error('JSON file does not contain an array');
   }
-  return obj.map((item) => {
+  return obj.map(item => {
     return item.data;
   });
 };
 
 export const getConcatString = async (filename: string): Promise<string> => {
   const data = await readFileAndDecompress(filename);
-  const obj = JSON.parse(Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString("utf-8"));
+  const obj = JSON.parse(
+    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
+      'utf-8',
+    ),
+  );
   if (!Array.isArray(obj)) {
-    throw new Error("JSON file does not contain an array");
+    throw new Error('JSON file does not contain an array');
   }
-  return obj.map((item) => item.data).join('');
+  return obj.map(item => item.data).join('');
 };

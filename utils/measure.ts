@@ -6,7 +6,7 @@ export interface Measurement<T> {
     /** average time per run (totalTime / runs) */
     avgTime: number;
 }
-  
+
 /**
  * Measure a synchronous function.
  *
@@ -27,7 +27,7 @@ export function measureSync<T>(fn: () => T, runs = 1): Measurement<T> {
       avgTime: totalTime / runs,
     };
 }
-  
+
 /**
  * Measure an async function.
  *

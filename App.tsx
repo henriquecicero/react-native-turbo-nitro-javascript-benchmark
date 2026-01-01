@@ -1,34 +1,29 @@
 import React from 'react';
 import {
+  ActivityIndicator,
+  Platform,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
-  ScrollView,
-  Alert,
-  Platform,
   TextInput,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import { palette, globalTextStyles } from './utils/theme';
-import SampleTurboModule from './modules/turbo/specs/NativeSampleModule';
 import RNFS from 'react-native-fs';
-import { NitroModules } from 'react-native-nitro-modules';
-import { Logbook } from './modules/nitro/Logbook.nitro';
+import {NitroModules} from 'react-native-nitro-modules';
+import {Logbook} from './modules/nitro/Logbook.nitro';
+import SampleTurboModule from './modules/turbo/specs/NativeSampleModule';
 import {
-  getSamplesSize,
-  getSamplesCount,
   getConcatString,
+  getSamplesCount,
+  getSamplesSize,
 } from './utils/logbook';
-import { Measurement, measureSync, measureAsync } from './utils/measure';
+import {measureAsync, Measurement, measureSync} from './utils/measure';
+import {palette} from './utils/theme';
 
-export const LogbookNitroModule = NitroModules.createHybridObject<Logbook>(
-  'Logbook',
-);
-
-Text.defaultProps = Text.defaultProps || {};
-Text.defaultProps.style = [Text.defaultProps.style, globalTextStyles];
+export const LogbookNitroModule =
+  NitroModules.createHybridObject<Logbook>('Logbook');
 
 const copyAssetToExternalPath = async (assetName: string): Promise<string> => {
   if (Platform.OS !== 'android') {
@@ -43,7 +38,7 @@ const copyAssetToExternalPath = async (assetName: string): Promise<string> => {
     if (!exists) {
       console.log(`Copying ${assetName} to ${destPath}...`);
       await RNFS.copyFileAssets(assetName, destPath);
-      console.log(`Copy complete.`);
+      console.log('Copy complete.');
     } else {
       console.log(`${assetName} already exists at ${destPath}`);
     }
@@ -56,10 +51,10 @@ const copyAssetToExternalPath = async (assetName: string): Promise<string> => {
 
 export default function App(): React.JSX.Element {
   const [measurementsSmall, setMeasurementsSmall] = React.useState<
-    Measurement<number>[][] | null
+    Measurement<number | ArrayBuffer | string>[][] | null
   >(null);
   const [measurementsHeavy, setMeasurementsHeavy] = React.useState<
-    Measurement<number>[][] | null
+    Measurement<number | ArrayBuffer | string>[][] | null
   >(null);
   const [status, setStatus] = React.useState<string | null>(null);
 
@@ -77,7 +72,7 @@ export default function App(): React.JSX.Element {
     await flushUI();
   };
 
-  const measureSyncAndUpdate = async <T>(
+  const measureSyncAndUpdate = async <T,>(
     statusText: string,
     fn: () => T,
   ): Promise<Measurement<T>> => {
@@ -87,7 +82,7 @@ export default function App(): React.JSX.Element {
     return measureSync(fn, count);
   };
 
-  const measureAsyncAndUpdate = async <T>(
+  const measureAsyncAndUpdate = async <T,>(
     statusText: string,
     fn: () => Promise<T>,
   ): Promise<Measurement<T>> => {
@@ -96,11 +91,13 @@ export default function App(): React.JSX.Element {
     const count = isNaN(runCount) || runCount <= 0 ? 100 : runCount;
     return measureAsync(fn, count);
   };
-  
+
   const runBenchmarkForFile = async (
     filepath: string,
     setMeasurements: React.Dispatch<
-      React.SetStateAction<Measurement<number>[][] | null>
+      React.SetStateAction<
+        Measurement<number | ArrayBuffer | string>[][] | null
+      >
     >,
     label: string,
     incrementProgress: () => void,
@@ -110,17 +107,19 @@ export default function App(): React.JSX.Element {
     setMeasurements(null);
 
     try {
-      const config = [
+      const config: Array<{
+        turbo: () => number | string;
+        nitro: () => number | string;
+        js: () => Promise<number | string>;
+      }> = [
         {
           turbo: () => SampleTurboModule.getSamplesSize(filepath),
           nitro: () => LogbookNitroModule.getSamplesSize(filepath),
           js: async () => getSamplesSize(filepath),
         },
         {
-          turbo: () =>
-            SampleTurboModule.getSamplesCount(filepath),
-          nitro: () =>
-            LogbookNitroModule.getSamplesCount(filepath),
+          turbo: () => SampleTurboModule.getSamplesCount(filepath),
+          nitro: () => LogbookNitroModule.getSamplesCount(filepath),
           js: async () => getSamplesCount(filepath),
         },
         {
@@ -130,21 +129,21 @@ export default function App(): React.JSX.Element {
         },
       ];
 
-      const results: Measurement<number>[][] = [];
+      const results: Measurement<number | ArrayBuffer | string>[][] = [];
 
       for (let i = 0; i < config.length; i++) {
         const c = config[i];
         const turbo = await measureSyncAndUpdate(
           `(${label}) Processing Turbomodules ${i + 1}...`,
-          c.turbo,
+          c.turbo as () => number | string,
         );
         const nitro = await measureSyncAndUpdate(
           `(${label}) Processing Nitromodules ${i + 1}...`,
-          c.nitro,
+          c.nitro as () => number | string,
         );
         const js = await measureAsyncAndUpdate(
           `(${label}) Processing JS ${i + 1}...`,
-          c.js,
+          c.js as () => Promise<number | string>,
         );
         results.push([turbo, nitro, js]);
         incrementProgress();
@@ -156,7 +155,11 @@ export default function App(): React.JSX.Element {
         `(${label}) Processing Nitromodules ${iteration}...`,
         () => LogbookNitroModule.getConcatStringZeroCopy(filepath),
       );
-      results.push([results[iteration - 1][0], nitro, results[iteration - 1][2]]);
+      results.push([
+        results[iteration - 1][0],
+        nitro,
+        results[iteration - 1][2],
+      ]);
       incrementProgress();
 
       await setStatusAndFlushUI(`Benchmarks complete for ${label} ✅`);
@@ -168,7 +171,7 @@ export default function App(): React.JSX.Element {
       await setStatusAndFlushUI(`Error occurred for ${label} ❌`);
     }
   };
-  
+
   const runAllBenchmarks = async () => {
     setIsRunning(true);
     setProgressStep(0);
@@ -176,8 +179,7 @@ export default function App(): React.JSX.Element {
       const smallFilePath = await copyAssetToExternalPath('small.zstd');
       const heavyFilePath = await copyAssetToExternalPath('big.zstd');
 
-      const incrementProgress = () =>
-        setProgressStep(prev => prev + 1);
+      const incrementProgress = () => setProgressStep(prev => prev + 1);
 
       await runBenchmarkForFile(
         smallFilePath,
@@ -198,14 +200,19 @@ export default function App(): React.JSX.Element {
   };
 
   const renderTable = (
-    measurements: Measurement<number>[][],
+    measurements: Measurement<number | ArrayBuffer | string>[][],
     title: string,
   ) => (
     <View style={styles.tableContainer}>
       <Text style={styles.info}>Results for {title} (avg per run):</Text>
       <View style={styles.table}>
         <View style={styles.tableRowHeader}>
-          <Text style={[styles.tableCell, styles.tableHeaderCell, styles.functionCell]}>
+          <Text
+            style={[
+              styles.tableCell,
+              styles.tableHeaderCell,
+              styles.functionCell,
+            ]}>
             Function
           </Text>
           <Text style={[styles.tableCell, styles.tableHeaderCell]}>
@@ -228,7 +235,9 @@ export default function App(): React.JSX.Element {
           const nitroSpeedup = (js.avgTime / nitro.avgTime).toFixed(1);
           return (
             <View key={funcName} style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.functionCell]}>{funcName}</Text>
+              <Text style={[styles.tableCell, styles.functionCell]}>
+                {funcName}
+              </Text>
               <Text style={styles.tableCell}>
                 {turbo.avgTime.toFixed(2)} ms ({turboSpeedup}x vs JS)
               </Text>
@@ -246,9 +255,7 @@ export default function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.section}>
-        <Text style={styles.title}>
-          JS vs Turbo vs Nitro modules benchmark
-        </Text>
+        <Text style={styles.title}>JS vs Turbo vs Nitro modules benchmark</Text>
         <View style={styles.runsRow}>
           <Text style={styles.subtitle}>Number of runs:</Text>
           <TextInput
@@ -277,8 +284,7 @@ export default function App(): React.JSX.Element {
         {/* Show the current status if available */}
         {status && <Text style={styles.status}>{status}</Text>}
 
-        {measurementsSmall &&
-          renderTable(measurementsSmall, 'Small File')}
+        {measurementsSmall && renderTable(measurementsSmall, 'Small File')}
         {measurementsHeavy && renderTable(measurementsHeavy, 'Heavy File')}
       </ScrollView>
     </SafeAreaView>
@@ -286,16 +292,16 @@ export default function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {flex: 1, backgroundColor: 'white'},
   section: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
-  title: { fontSize: 20, marginBottom: 16, textAlign: 'center' },
-  info: { fontSize: 16, fontWeight: '600', marginTop: 16 },
-  status: { fontSize: 16, marginTop: 16, fontStyle: 'italic' },
+  title: {fontSize: 20, marginBottom: 16, textAlign: 'center'},
+  info: {fontSize: 16, fontWeight: '600', marginTop: 16},
+  status: {fontSize: 16, marginTop: 16, fontStyle: 'italic'},
 
   tableContainer: {
     marginTop: 24,
@@ -344,7 +350,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  subtitle: { fontSize: 16, marginRight: 8 },
+  subtitle: {fontSize: 16, marginRight: 8},
   runButton: {
     backgroundColor: palette.primary,
     paddingVertical: 12,
@@ -358,6 +364,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  spinner: { marginTop: 16 },
-  progress: { fontSize: 16, marginTop: 8 },
+  spinner: {marginTop: 16},
+  progress: {fontSize: 16, marginTop: 8},
 });
