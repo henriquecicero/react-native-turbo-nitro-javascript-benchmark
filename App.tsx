@@ -1,26 +1,26 @@
-import React from 'react';
+import { Dispatch, JSX, SetStateAction, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import RNFS from 'react-native-fs';
-import {NitroModules} from 'react-native-nitro-modules';
-import {Logbook} from './modules/nitro/Logbook.nitro';
+import * as RNFS from 'react-native-fs';
+import { NitroModules } from 'react-native-nitro-modules';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Logbook } from './modules/nitro/Logbook.nitro';
 import SampleTurboModule from './modules/turbo/specs/NativeSampleModule';
 import {
   getConcatString,
   getSamplesCount,
   getSamplesSize,
 } from './utils/logbook';
-import {measureAsync, Measurement, measureSync} from './utils/measure';
-import {palette} from './utils/theme';
+import { measureAsync, Measurement, measureSync } from './utils/measure';
+import { palette } from './utils/theme';
 
 export const LogbookNitroModule =
   NitroModules.createHybridObject<Logbook>('Logbook');
@@ -49,22 +49,23 @@ const copyAssetToExternalPath = async (assetName: string): Promise<string> => {
   }
 };
 
-export default function App(): React.JSX.Element {
-  const [measurementsSmall, setMeasurementsSmall] = React.useState<
+export default function App(): JSX.Element {
+  const [measurementsSmall, setMeasurementsSmall] = useState<
     Measurement<number | ArrayBuffer | string>[][] | null
   >(null);
-  const [measurementsHeavy, setMeasurementsHeavy] = React.useState<
+  const [measurementsHeavy, setMeasurementsHeavy] = useState<
     Measurement<number | ArrayBuffer | string>[][] | null
   >(null);
-  const [status, setStatus] = React.useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
-  const [isRunning, setIsRunning] = React.useState(false);
-  const [progressStep, setProgressStep] = React.useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [progressStep, setProgressStep] = useState(0);
   const TOTAL_STEPS = 7;
 
-  const [runs, setRuns] = React.useState('100');
+  const [runs, setRuns] = useState('100');
 
-  const flushUI = () => new Promise(resolve => setTimeout(resolve, 0));
+  const flushUI = () =>
+    new Promise<void>(resolve => setTimeout(() => resolve(), 0));
 
   const setStatusAndFlushUI = async (text: string) => {
     console.log(text);
@@ -94,10 +95,8 @@ export default function App(): React.JSX.Element {
 
   const runBenchmarkForFile = async (
     filepath: string,
-    setMeasurements: React.Dispatch<
-      React.SetStateAction<
-        Measurement<number | ArrayBuffer | string>[][] | null
-      >
+    setMeasurements: Dispatch<
+      SetStateAction<Measurement<number | ArrayBuffer | string>[][] | null>
     >,
     label: string,
     incrementProgress: () => void,
@@ -212,7 +211,8 @@ export default function App(): React.JSX.Element {
               styles.tableCell,
               styles.tableHeaderCell,
               styles.functionCell,
-            ]}>
+            ]}
+          >
             Function
           </Text>
           <Text style={[styles.tableCell, styles.tableHeaderCell]}>
@@ -292,16 +292,16 @@ export default function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: 'white'},
+  container: { flex: 1, backgroundColor: 'white' },
   section: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
-  title: {fontSize: 20, marginBottom: 16, textAlign: 'center'},
-  info: {fontSize: 16, fontWeight: '600', marginTop: 16},
-  status: {fontSize: 16, marginTop: 16, fontStyle: 'italic'},
+  title: { fontSize: 20, marginBottom: 16, textAlign: 'center' },
+  info: { fontSize: 16, fontWeight: '600', marginTop: 16 },
+  status: { fontSize: 16, marginTop: 16, fontStyle: 'italic' },
 
   tableContainer: {
     marginTop: 24,
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  subtitle: {fontSize: 16, marginRight: 8},
+  subtitle: { fontSize: 16, marginRight: 8 },
   runButton: {
     backgroundColor: palette.primary,
     paddingVertical: 12,
@@ -364,6 +364,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  spinner: {marginTop: 16},
-  progress: {fontSize: 16, marginTop: 8},
+  spinner: { marginTop: 16 },
+  progress: { fontSize: 16, marginTop: 8 },
 });

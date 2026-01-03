@@ -1,7 +1,7 @@
-import {Buffer} from 'buffer';
-import fzstd from 'fzstd';
+import { Buffer } from 'buffer';
+import { decompress } from 'fzstd';
 import RNFetchBlob from 'react-native-blob-util';
-import {toByteArray} from 'react-native-quick-base64';
+import { toByteArray } from 'react-native-quick-base64';
 
 export const readFile = async (fileName: string): Promise<Uint8Array> => {
   const base64String = await RNFetchBlob.fs.readFile(fileName, 'base64');
@@ -13,7 +13,7 @@ export const readFileAndDecompress = async (
 ): Promise<Uint8Array> => {
   const base64Blob = await RNFetchBlob.fs.readFile(fileName, 'base64');
   const blob = toByteArray(base64Blob);
-  const data = fzstd.decompress(blob);
+  const data = decompress(blob);
   return data;
 };
 
@@ -25,9 +25,9 @@ export const getSamplesSize = async (filename: string): Promise<number> => {
 export const getSamplesCount = async (filename: string): Promise<number> => {
   const data = await readFileAndDecompress(filename);
   const obj = JSON.parse(
-    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
-      'utf-8',
-    ),
+    Buffer.from(
+      new Uint8Array(data.buffer, data.byteOffset, data.byteLength),
+    ).toString('utf-8'),
   );
   if (!Array.isArray(obj)) {
     throw new Error('JSON file does not contain an array');
@@ -38,9 +38,9 @@ export const getSamplesCount = async (filename: string): Promise<number> => {
 export const getSamples = async (filename: string): Promise<string[]> => {
   const data = await readFileAndDecompress(filename);
   const obj = JSON.parse(
-    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
-      'utf-8',
-    ),
+    Buffer.from(
+      new Uint8Array(data.buffer, data.byteOffset, data.byteLength),
+    ).toString('utf-8'),
   );
   if (!Array.isArray(obj)) {
     throw new Error('JSON file does not contain an array');
@@ -53,9 +53,9 @@ export const getSamples = async (filename: string): Promise<string[]> => {
 export const getConcatString = async (filename: string): Promise<string> => {
   const data = await readFileAndDecompress(filename);
   const obj = JSON.parse(
-    Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString(
-      'utf-8',
-    ),
+    Buffer.from(
+      new Uint8Array(data.buffer, data.byteOffset, data.byteLength),
+    ).toString('utf-8'),
   );
   if (!Array.isArray(obj)) {
     throw new Error('JSON file does not contain an array');
