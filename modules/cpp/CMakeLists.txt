@@ -14,26 +14,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(zstd)
 
-# boost-headers-only
-# FetchContent_Declare(
-#     boostheadersonly
-#     GIT_REPOSITORY https://github.com/orca-io/boost-headers-only
-#     GIT_TAG         571b67368a284ba9cfaea34a8ce6d881acc1647d
-#     GIT_SHALLOW     TRUE
-# )
-# FetchContent_MakeAvailable(boostheadersonly)
-
-# MsgPack
-# set(Boost_INCLUDE_DIR ${boostheadersonly_SOURCE_DIR})
-# OPTION (MSGPACK_CXX17 "Using c++17 compiler" ON)
-# FetchContent_Declare(
-#     msgpack
-#     GIT_REPOSITORY https://github.com/msgpack/msgpack-c.git
-#     GIT_TAG cpp-6.0.0
-#     GIT_SHALLOW     TRUE
-# )
-# FetchContent_MakeAvailable(msgpack)
-
 # RapidJson
 option(RAPIDJSON_BUILD_DOC "Build rapidjson documentation." OFF)
 option(RAPIDJSON_BUILD_EXAMPLES "Build rapidjson examples." OFF)
@@ -58,4 +38,3 @@ add_library(logbook logbook.cpp)
 target_include_directories(logbook PUBLIC .)
 target_include_directories(logbook PRIVATE ${zstd_BINARY_DIR}/../zstd-src/lib)
 target_link_libraries(logbook libzstd_static rapidjson)
-# target_link_libraries(logbook msgpack-cxx)

@@ -29,17 +29,15 @@
 
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
+#include <FBReactNativeSpec.h>
 #include <autolinking.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <rncore.h>
-
 // Include the NativeSampleModule header
 #include <NativeSampleModule.h>
 
 // Nitro
 #include "NitroLogbookOnLoad.hpp"
-
 
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
 #include REACT_NATIVE_APP_CODEGEN_HEADER
@@ -77,7 +75,6 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
   // if (name == NativeCxxModuleExample::kModuleName) {
   //   return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   // }
-
   // This code register the module so that when the JS side asks for it, the app can return it
   if (name == NativeSampleModule::kModuleName) {
     return std::make_shared<NativeSampleModule>(jsInvoker);
@@ -85,6 +82,8 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
 
   // And we fallback to the CXX module providers autolinked
   return autolinking_cxxModuleProvider(name, jsInvoker);
+
+  return nullptr;
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
@@ -109,7 +108,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
 #endif
 
   // We first try to look up core modules
-  if (auto module = rncore_ModuleProvider(name, params)) {
+  if (auto module = FBReactNativeSpec_ModuleProvider(name, params)) {
     return module;
   }
 
