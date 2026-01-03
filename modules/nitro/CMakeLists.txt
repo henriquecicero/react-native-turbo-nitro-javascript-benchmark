@@ -1,32 +1,62 @@
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE 
+# We link Nitro prefab (produced by :react-native-nitro-modules:prefab{Debug,Release}Package)
+# into the React Native app target created in android/app/src/main/jni/CMakeLists.txt.
+
+# Generate the prefab package
+# Release
+# ./gradlew :react-native-nitro-modules:prefabReleasePackage
+# ./gradlew "app:configureCMakeRelease[arm64-v8a]"
+# yarn android --mode=Release
+
+# Debug
+# ./gradlew :react-native-nitro-modules:prefabDebugPackage
+# ./gradlew "app:configureCMakeDebug[arm64-v8a]"
+# yarn android
+
+# I’ll come back to this later
+
+if(TARGET appmodules)
+  set(APP_TARGET appmodules)
+elseif(TARGET ${CMAKE_PROJECT_NAME})
+  set(APP_TARGET ${CMAKE_PROJECT_NAME})
+else()
+  message(FATAL_ERROR "Nitro CMakeLists: expected target appmodules (React Native app), but none found.")
+endif()
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" NITRO_BUILD_TYPE_LOWER)
+if("${NITRO_BUILD_TYPE_LOWER}" STREQUAL "" OR "${NITRO_BUILD_TYPE_LOWER}" STREQUAL "debug")
+  set(NITRO_BUILD_TYPE_LOWER "debug")
+elseif("${NITRO_BUILD_TYPE_LOWER}" STREQUAL "relwithdebinfo")
+  # prefab uses "release" folder for both Release/RelWithDebInfo
+  set(NITRO_BUILD_TYPE_LOWER "release")
+endif()
+
+set(NITRO_PREFAB_ROOT
+    ${CMAKE_CURRENT_LIST_DIR}/../../node_modules/react-native-nitro-modules/android/build/intermediates/prefab_package/${NITRO_BUILD_TYPE_LOWER}/prefab/modules/NitroModules
+)
+set(NITRO_LIB ${NITRO_PREFAB_ROOT}/libs/android.${ANDROID_ABI}/libNitroModules.so)
+
+find_library(ANDROID_LOG_LIB log)
+find_package(fbjni REQUIRED)
+find_package(ReactAndroid REQUIRED CONFIG)
+
+target_sources(${APP_TARGET} PRIVATE
   android/NitroLogbookOnLoad.cpp
   shared/c++/HybridLogbookSpec.cpp
 )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC 
-  ./
-  android/
-  shared/c++
+
+target_include_directories(${APP_TARGET} PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}
+  ${CMAKE_CURRENT_LIST_DIR}/android
+  ${CMAKE_CURRENT_LIST_DIR}/shared/c++
+  ${NITRO_PREFAB_ROOT}/include
 )
 
-target_link_libraries(${CMAKE_PROJECT_NAME} logbook log)
-
-# Define a flag to check if we are building properly
-add_definitions(-DBUILDING_APPMODULES_WITH_GENERATED_CMAKE_PROJECT)
-
-# From node_modules/react-native/ReactAndroid/cmake-utils/folly-flags.cmake
-# Used in node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE folly_FLAGS)
-
-# Add all libraries required by the generated specs
-find_package(fbjni REQUIRED) # <-- Used for communication between Java <-> C++
-find_package(ReactAndroid REQUIRED) # <-- Used to set up React Native bindings (e.g. CallInvoker/TurboModule)
-find_package(react-native-nitro-modules REQUIRED) # <-- Used to create all HybridObjects and use the Nitro core library
-
-# Link all libraries together (RN >= 0.76)
-target_link_libraries(
-  ${CMAKE_PROJECT_NAME}
-  fbjni::fbjni                              # <-- Facebook C++ JNI helpers
-  ReactAndroid::jsi                         # <-- RN: JSI
-  react-native-nitro-modules::NitroModules  # <-- NitroModules Core :)
-  ReactAndroid::reactnative                 # <-- RN: Native Modules umbrella prefab
+target_link_libraries(${APP_TARGET}
+  ${NITRO_LIB}
+  logbook
+  ${ANDROID_LOG_LIB}
+  android
+  fbjni::fbjni
+  ReactAndroid::jsi
+  ReactAndroid::reactnative
 )
