@@ -1,12 +1,16 @@
 {
   "$schema": "https://nitro.margelo.com/nitro.schema.json",
-  "cxxNamespace": ["logbook"],
+  "cxxNamespace": [
+    "logbook"
+  ],
   "ios": {
-    "iosModuleName": "NitroExample"
+    "iosModuleName": "NitroLogbook"
   },
   "android": {
-    "androidNamespace": ["logbook"],
-    "androidCxxLibName": "NitroExample"
+    "androidNamespace": [
+      "logbook"
+    ],
+    "androidCxxLibName": "NitroLogbook"
   },
   "autolinking": {
     "Logbook": {
