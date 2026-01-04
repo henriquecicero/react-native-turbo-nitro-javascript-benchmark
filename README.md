@@ -1,67 +1,38 @@
-# React Native: JavaScript vs TurboModules vs NitroModules — Benchmark
+# react-native-turbo-nitro-javascript-benchmark
 
-This project compares the performance of **JavaScript**, **TurboModules**, and **NitroModules** in a React Native app by benchmarking a realistic workflow involving I/O, compression and JSON parsing. The goal is to demonstrate the performance benefits of moving heavy operations tasks into shared native C++ code used by TurboModules and NitroModules.
+This project is forked from
+[orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark).
 
-> [!NOTE]
-> This project currently supports only Android builds
+You can check the
+[original README](./original/README.md)
+or see how the project is currently evolving in
+[orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark).
+They have an amazing device called **Orca Display** that outperforms a **Pixel 9** in these benchmarks.
 
-TurboModules are part of React Native's [native modules](https://reactnative.dev/docs/turbo-native-modules-introduction) system. NitroModules (from Margelo) are an alternative implementation focused on performance; see the [NitroModules documentation](https://nitro.margelo.com/) for details.
+I’m publishing the results of my own tests below.
 
-Benchmarked operations
-
-1. **Get data size (bytes)**: read .zstd -> decompress -> return size
-2. **Get JSON array size**: read .zstd -> decompress -> parse json -> return array size
-3. **Get concatenated string from JSON**: read .zstd -> decompress -> parse json -> return concatenated string values
-4. **Get concatenated string from JSON (zero-copy Nitro)**: Same as (3) but using the zero-copy BufferArray in the Nitro implementation to avoid extra allocations and copies.
-
-# Summary of results (release build)
-
-* Native Modules dramatically outperform pure JavaScript: TurboModules and NitroModules run roughly **30–60× faster** for these workloads.
-* TurboModules and NitroModules show similar performance overall, as the heavy lifting is done in the shared C++ code.
-* Nitro's zero-copy strategy (reusing buffers) provides an additional **~8–40% improvement** on large payloads or when many allocations occur.
-* Device CPU affects absolute latency but not the relative ordering of approaches.
-
-## Pixel 9 results (1000 runs)
+## Samsung Galaxy A12 results (1000 runs)
 
 ### Small File
 
 | Operation                                     | TurboModules          | NitroModules          | JavaScript |
 | --------------------------------------------- | --------------------- | --------------------- | ---------- |
-| Get data size (bytes)                         | 0.36 ms (46.2x vs JS) | 0.27 ms (62.2x vs JS) | 16.62 ms   |
-| Get JSON array size                           | 0.50 ms (57.2x vs JS) | 0.54 ms (53.7x vs JS) | 28.86 ms   |
-| Get concat string from json                   | 0.55 ms (59.6x vs JS) | 0.57 ms (57.7x vs JS) | 32.82 ms   |
-| Get concat string from json (zero-copy Nitro) | 0.55 ms (59.6x vs JS) | 0.65 ms (50.4x vs JS) | 32.82 ms   |
-
-### Heavy File
-
-| Operation                                     | TurboModules          | NitroModules          | JavaScript |
-| --------------------------------------------- | --------------------- | --------------------- | ---------- |
-| Get data size (bytes)                         | 4.01 ms (28.8x vs JS) | 3.37 ms (34.2x vs JS) | 115.56 ms  |
-| Get JSON array size                           | 5.70 ms (62.1x vs JS) | 6.50 ms (54.5x vs JS) | 353.95 ms  |
-| Get concat string from json                   | 7.08 ms (50.0x vs JS) | 6.73 ms (52.6x vs JS) | 354.23 ms  |
-| Get concat string from json (zero-copy Nitro) | 7.08 ms (50.0x vs JS) | 6.11 ms (58.0x vs JS) | 354.23 ms  |
-
-
-## Orca Display 2 results (1000 runs)
-
-### Small File
-
-| Operation                                     | TurboModules          | NitroModules          | JavaScript |
-| --------------------------------------------- | --------------------- | --------------------- | ---------- |
-| Get data size (bytes)                         | 0.62 ms (34.4x vs JS) | 0.58 ms (36.4x vs JS) | 21.19 ms   |
-| Get JSON array size                           | 0.96 ms (61.6x vs JS) | 0.97 ms (60.7x vs JS) | 58.94 ms   |
-| Get concat string from json                   | 1.03 ms (57.6x vs JS) | 1.05 ms (56.8x vs JS) | 59.52 ms   |
-| Get concat string from json (zero-copy Nitro) | 1.03 ms (57.6x vs JS) | 1.02 ms (58.2x vs JS) | 59.52 ms   |
-
+| Get data size (bytes)                         | 1.99 ms (38.8x vs JS) | 1.98 ms (38.9x vs JS) | 77.07 ms   |
+| Get JSON array size                           | 2.90 ms (68.2x vs JS) | 2.91 ms (68.0x vs JS) | 197.61 ms  |
+| Get concat string from json                   | 3.20 ms (62.0x vs JS) | 3.20 ms (62.1x vs JS) | 198.57 ms  |
+| Get concat string from json (zero-copy Nitro) | 3.20 ms (62.0x vs JS) | 3.19 ms (62.3x vs JS) | 198.57 ms  |
 
 ### Heavy File
 
 | Operation                                     | TurboModules           | NitroModules           | JavaScript |
 | --------------------------------------------- | ---------------------- | ---------------------- | ---------- |
-| Get data size (bytes)                         | 6.05 ms (31.5x vs JS)  | 6.06 ms (31.5x vs JS)  | 190.69 ms  |
-| Get JSON array size                           | 9.80 ms (60.1x vs JS)  | 9.57 ms (61.5x vs JS)  | 588.45 ms  |
-| Get concat string from json                   | 12.25 ms (48.6x vs JS) | 12.51 ms (47.6x vs JS) | 594.98 ms  |
-| Get concat string from json (zero-copy Nitro) | 12.25 ms (48.6x vs JS) | 10.61 ms (56.1x vs JS) | 594.98 ms  |
+| Get data size (bytes)                         | 19.70 ms (37.4x vs JS) | 19.70 ms (37.4x vs JS) | 737.21 ms  |
+| Get JSON array size                           | 28.99 ms (68.0x vs JS) | 28.83 ms (68.4x vs JS) | 1971.47 ms |
+| Get concat string from json                   | 33.69 ms (58.8x vs JS) | 33.72 ms (58.8x vs JS) | 1981.79 ms |
+| Get concat string from json (zero-copy Nitro) | 33.69 ms (58.8x vs JS) | 32.83 ms (60.4x vs JS) | 1981.79 ms |
 
+**Note**: This project was also updated from **react-native 0.78.2** to **0.83.0**, and **react-native-nitro-modules** and **nitro-codegen** were upgraded from **0.25.2** to **0.32.0**.
 
+The benchmark APK was built using **yarn android --mode=Release**.
 
+In the future, I’ll try to add iOS support for this benchmark.
