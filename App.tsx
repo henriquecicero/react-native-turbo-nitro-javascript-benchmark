@@ -26,22 +26,30 @@ export const LogbookNitroModule =
   NitroModules.createHybridObject<Logbook>('Logbook');
 
 const copyAssetToExternalPath = async (assetName: string): Promise<string> => {
-  if (Platform.OS !== 'android') {
-    throw new Error('This function is implemented only for Android.');
-  }
-
-  const destPath = `${RNFS.ExternalDirectoryPath}/${assetName}`;
+  const destPath =
+    Platform.OS === 'android'
+      ? `${RNFS.ExternalDirectoryPath}/${assetName}`
+      : `${RNFS.TemporaryDirectoryPath}${assetName}`;
 
   try {
-    // Check if file already exists to avoid redundant copy
     const exists = await RNFS.exists(destPath);
-    if (!exists) {
-      console.log(`Copying ${assetName} to ${destPath}...`);
+    if (exists) {
+      console.log(`${assetName} already exists at ${destPath}`);
+      return destPath;
+    }
+
+    if (Platform.OS === 'android') {
+      console.log(`Copying ${assetName} to ${destPath} from assets...`);
       await RNFS.copyFileAssets(assetName, destPath);
       console.log('Copy complete.');
-    } else {
-      console.log(`${assetName} already exists at ${destPath}`);
+      return destPath;
     }
+
+    // iOS: shipped as bundled resources; copy from main bundle to a writable temp path.
+    const bundlePath = `${RNFS.MainBundlePath}/${assetName}`;
+    console.log(`Copying ${assetName} from bundle to ${destPath}...`);
+    await RNFS.copyFile(bundlePath, destPath);
+    console.log('Copy complete.');
     return destPath;
   } catch (error) {
     console.error(`Failed to copy asset: ${error}`);

@@ -1,8 +1,5 @@
 #include "NativeSampleModule.h"
-#include "logbook.h"
-#include <android/log.h>
-
-#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, "--MODULE---", __VA_ARGS__)
+#include "../../cpp/logbook.h"
 
 namespace facebook::react {
 
