@@ -51,9 +51,30 @@ I’m publishing the results of my own tests below.
 | Get concat string from json                   | 7.08 ms (50.0x vs JS) | 6.73 ms (52.6x vs JS) | 354.23 ms  |
 | Get concat string from json (zero-copy Nitro) | 7.08 ms (50.0x vs JS) | 6.11 ms (58.0x vs JS) | 354.23 ms  |
 
+## iPhone 13 Pro Max (MLLA3BZ/A) · iOS 26.3 · 1000 runs
+
+### Small File
+
+| Function                                      | Turbo Modules         | Nitro Modules         | JS       |
+| --------------------------------------------- | --------------------- | --------------------- | -------- |
+| Get data size (bytes)                         | 0.38 ms (25.4× vs JS) | 0.35 ms (27.6× vs JS) | 9.59 ms  |
+| Get JSON array size                           | 0.53 ms (46.5× vs JS) | 0.55 ms (45.5× vs JS) | 24.80 ms |
+| Get concat string from JSON                   | 0.59 ms (43.1× vs JS) | 0.59 ms (43.1× vs JS) | 25.57 ms |
+| Get concat string from JSON (zero-copy Nitro) | 0.59 ms (43.1× vs JS) | 0.62 ms (41.1× vs JS) | 25.57 ms |
+
+### Heavy File
+
+| Function                                      | Turbo Modules         | Nitro Modules         | JS        |
+| --------------------------------------------- | --------------------- | --------------------- | --------- |
+| Get data size (bytes)                         | 3.31 ms (31.0× vs JS) | 3.32 ms (30.9× vs JS) | 102.61 ms |
+| Get JSON array size                           | 5.72 ms (50.9× vs JS) | 5.89 ms (49.5× vs JS) | 291.22 ms |
+| Get concat string from JSON                   | 6.50 ms (45.7× vs JS) | 6.72 ms (44.2× vs JS) | 296.82 ms |
+| Get concat string from JSON (zero-copy Nitro) | 6.50 ms (45.7× vs JS) | 6.72 ms (44.2× vs JS) | 296.82 ms |
+
 > [!Note]
 > This project was also updated to **react-native 0.83.0** (from 0.78.2), and **react-native-nitro-modules** was upgraded from 0.25.2 to **0.32.0**.
 
 The benchmark APK was built using **yarn android --mode=Release**.
+The benchmark IPA was built using **yarn ios --mode=Release**.
 
-In the future, I’ll try to add iOS support for this benchmark.
+[Changelog](./changelog.md)
