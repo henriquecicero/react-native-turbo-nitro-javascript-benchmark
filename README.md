@@ -3,11 +3,9 @@
 This project is forked from
 [orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark).
 
-You can check the
-[original README](./original_README.md)
-or see how the project is currently evolving in
+You can check the original [README](./original_README.md) here, or see the current version in
 [orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark/blob/master/README.md).
-They have an amazing device called [**Orca Display**](https://getorca.com/orca-display-2/) that outperforms a **Pixel 9** in these benchmarks.
+You should also check out their amazing device, the [**Orca Display**](https://getorca.com/orca-display-2/), which outperforms a **Pixel 9** in these benchmarks.
 
 I’m publishing the results of my own tests below.
 
