@@ -73,4 +73,4 @@ I’m publishing the results of my own tests below.
 
 The benchmark APK and IPA were built using **--mode=Release**.
 
-[Changelog](./changelog.md)
+[Changelog](./CHANGELOG.md)
