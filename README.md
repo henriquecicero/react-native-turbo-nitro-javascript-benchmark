@@ -52,7 +52,7 @@ I’m publishing the results of my own tests below.
 | Get concat string from json (zero-copy Nitro) | 7.08 ms (50.0x vs JS) | 6.11 ms (58.0x vs JS) | 354.23 ms  |
 
 > [!Note]
-> This project was also updated from **react-native 0.78.2** to **0.83.0**, and **react-native-nitro-modules** and **nitro-codegen** were upgraded from **0.25.2** to **0.32.0**.
+> This project was also updated to **react-native 0.83.0** (from 0.78.2), and **react-native-nitro-modules** was upgraded from 0.25.2 to **0.32.0**.
 
 The benchmark APK was built using **yarn android --mode=Release**.
 
