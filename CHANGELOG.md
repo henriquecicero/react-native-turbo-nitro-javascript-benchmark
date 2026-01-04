@@ -16,5 +16,5 @@
 - [x] Update `react-native` and other core dependencies.
 - [x] Add `iOS` support for `Nitro` and `Turbo` Modules. :(
 - [ ] **I’ll try to keep my side of the street clean on `iOS`. I promise.** :)
-- [ ] Add `Rust` support using `UniFFI`. I have a (repo)[https://github.com/henriquecicero/react-native-exploring-turbo-modules-rust] to help with that.
+- [ ] Add `Rust` support using `UniFFI`. I have a [repo](https://github.com/henriquecicero/react-native-exploring-turbo-modules-rust) to help with that.
 - [ ] Add `Expo` Modules support.
