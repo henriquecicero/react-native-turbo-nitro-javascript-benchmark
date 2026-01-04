@@ -6,7 +6,7 @@ This project is forked from
 You can check the
 [original README](./original_README.md)
 or see how the project is currently evolving in
-[orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark).
+[orca-io/rn-turbo-nitro-js-benchmark](https://github.com/orca-io/rn-turbo-nitro-js-benchmark/blob/master/README.md).
 They have an amazing device called **Orca Display** that outperforms a **Pixel 9** in these benchmarks.
 
 I’m publishing the results of my own tests below.
