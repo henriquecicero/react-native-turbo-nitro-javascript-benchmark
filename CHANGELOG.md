@@ -3,8 +3,8 @@
 ## 0.0.1 (03/01/2026)
 
 - Updated `react-native` to 0.83.0 and `nitro-codegen` to 0.32.0;
-- Added new benchmarks from my `Android` devices.
-- PR: [#1](https://github.com/henriquecicero/react-native-turbo-nitro-javascript-benchmark/pull/1)
+- Added new benchmarks from my `Android` devices;
+- PR: [#1](https://github.com/henriquecicero/react-native-turbo-nitro-javascript-benchmark/pull/1).
 
 ## 0.1.0 (??/??/??)
 
